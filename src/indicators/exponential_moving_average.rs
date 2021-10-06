@@ -68,7 +68,7 @@ impl ExponentialMovingAverage {
             0 => Err(TaError::InvalidParameter),
             _ => Ok(Self {
                 period,
-                k: 2.0 / (period + 1) as f64,
+                k: 1.0 / period as f64,
                 current: 0.0,
                 is_new: true,
             }),
@@ -120,60 +120,5 @@ impl Default for ExponentialMovingAverage {
 impl fmt::Display for ExponentialMovingAverage {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "EMA({})", self.period)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::test_helper::*;
-
-    test_indicator!(ExponentialMovingAverage);
-
-    #[test]
-    fn test_new() {
-        assert!(ExponentialMovingAverage::new(0).is_err());
-        assert!(ExponentialMovingAverage::new(1).is_ok());
-    }
-
-    #[test]
-    fn test_next() {
-        let mut ema = ExponentialMovingAverage::new(3).unwrap();
-
-        assert_eq!(ema.next(2.0), 2.0);
-        assert_eq!(ema.next(5.0), 3.5);
-        assert_eq!(ema.next(1.0), 2.25);
-        assert_eq!(ema.next(6.25), 4.25);
-
-        let mut ema = ExponentialMovingAverage::new(3).unwrap();
-        let bar1 = Bar::new().close(2);
-        let bar2 = Bar::new().close(5);
-        assert_eq!(ema.next(&bar1), 2.0);
-        assert_eq!(ema.next(&bar2), 3.5);
-    }
-
-    #[test]
-    fn test_reset() {
-        let mut ema = ExponentialMovingAverage::new(5).unwrap();
-
-        assert_eq!(ema.next(4.0), 4.0);
-        ema.next(10.0);
-        ema.next(15.0);
-        ema.next(20.0);
-        assert_ne!(ema.next(4.0), 4.0);
-
-        ema.reset();
-        assert_eq!(ema.next(4.0), 4.0);
-    }
-
-    #[test]
-    fn test_default() {
-        ExponentialMovingAverage::default();
-    }
-
-    #[test]
-    fn test_display() {
-        let ema = ExponentialMovingAverage::new(7).unwrap();
-        assert_eq!(format!("{}", ema), "EMA(7)");
     }
 }
