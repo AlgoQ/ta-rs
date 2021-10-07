@@ -1,6 +1,6 @@
 use tars::indicators::ExponentialMovingAverage as Ema;
 use tars::DataItem;
-use tars::Next;
+use tars::Nexta;
 
 fn main() {
     let mut ema = Ema::new(9).unwrap();
@@ -10,7 +10,7 @@ fn main() {
         // Deserialize DataItem but ignore the `date` field.
         // You may have to create your own struct if you want to keep track of the date.
         let dt: DataItem = record.unwrap();
-        let ema_val = ema.next(&dt);
+        let ema_val = ema.nexta(&dt);
         println!("{} = {:2.2}", ema, ema_val);
     }
 }

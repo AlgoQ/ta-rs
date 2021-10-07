@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{Close, Next, Reset, Volume};
+use crate::{Close, Nexta, Reset, Volume};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -29,7 +29,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::OnBalanceVolume;
-/// use tars::{Next, DataItem};
+/// use tars::{Nexta, DataItem};
 ///
 /// let mut obv = OnBalanceVolume::new();
 ///
@@ -49,8 +49,8 @@ use serde::{Deserialize, Serialize};
 ///             .volume(300.0)
 ///             .build().unwrap();
 ///
-/// assert_eq!(obv.next(&di1), 1000.0);
-/// assert_eq!(obv.next(&di2), 700.0);
+/// assert_eq!(obv.nexta(&di1), 1000.0);
+/// assert_eq!(obv.nexta(&di2), 700.0);
 /// ```
 ///
 /// # Links
@@ -75,10 +75,10 @@ impl OnBalanceVolume {
     }
 }
 
-impl<T: Close + Volume> Next<&T> for OnBalanceVolume {
+impl<T: Close + Volume> Nexta<&T> for OnBalanceVolume {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> f64 {
+    fn nexta(&mut self, input: &T) -> f64 {
         if input.close() > self.prev_close {
             self.obv = self.obv + input.volume();
         } else if input.close() < self.prev_close {
@@ -122,16 +122,16 @@ mod tests {
         let bar3 = Bar::new().close(4).volume(9000.0);
         let bar4 = Bar::new().close(4).volume(4000.0);
 
-        assert_eq!(obv.next(&bar1), 1000.0);
+        assert_eq!(obv.nexta(&bar1), 1000.0);
 
         //close > prev_close
-        assert_eq!(obv.next(&bar2), 6000.0);
+        assert_eq!(obv.nexta(&bar2), 6000.0);
 
         // close < prev_close
-        assert_eq!(obv.next(&bar3), -3000.0);
+        assert_eq!(obv.nexta(&bar3), -3000.0);
 
         // close == prev_close
-        assert_eq!(obv.next(&bar4), -3000.0);
+        assert_eq!(obv.nexta(&bar4), -3000.0);
     }
 
     #[test]
@@ -142,15 +142,15 @@ mod tests {
         let bar2 = Bar::new().close(4).volume(2000.0);
         let bar3 = Bar::new().close(8).volume(3000.0);
 
-        assert_eq!(obv.next(&bar1), 1000.0);
-        assert_eq!(obv.next(&bar2), 3000.0);
-        assert_eq!(obv.next(&bar3), 6000.0);
+        assert_eq!(obv.nexta(&bar1), 1000.0);
+        assert_eq!(obv.nexta(&bar2), 3000.0);
+        assert_eq!(obv.nexta(&bar3), 6000.0);
 
         obv.reset();
 
-        assert_eq!(obv.next(&bar1), 1000.0);
-        assert_eq!(obv.next(&bar2), 3000.0);
-        assert_eq!(obv.next(&bar3), 6000.0);
+        assert_eq!(obv.nexta(&bar1), 1000.0);
+        assert_eq!(obv.nexta(&bar2), 3000.0);
+        assert_eq!(obv.nexta(&bar3), 6000.0);
     }
 
     #[test]

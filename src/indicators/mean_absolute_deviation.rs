@@ -4,7 +4,7 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 
 use crate::errors::{Result, TaError};
-use crate::{Close, Next, Period, Reset};
+use crate::{Close, Nexta, Period, Reset};
 
 /// Mean Absolute Deviation (MAD)
 ///
@@ -58,10 +58,10 @@ impl Period for MeanAbsoluteDeviation {
     }
 }
 
-impl Next<f64> for MeanAbsoluteDeviation {
+impl Nexta<f64> for MeanAbsoluteDeviation {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
+    fn nexta(&mut self, input: f64) -> Self::Output {
         self.sum = if self.count < self.period {
             self.count = self.count + 1;
             self.sum + input
@@ -86,11 +86,11 @@ impl Next<f64> for MeanAbsoluteDeviation {
     }
 }
 
-impl<T: Close> Next<&T> for MeanAbsoluteDeviation {
+impl<T: Close> Nexta<&T> for MeanAbsoluteDeviation {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.close())
     }
 }
 
@@ -134,25 +134,25 @@ mod tests {
     fn test_next() {
         let mut mad = MeanAbsoluteDeviation::new(5).unwrap();
 
-        assert_eq!(round(mad.next(1.5)), 0.0);
-        assert_eq!(round(mad.next(4.0)), 1.25);
-        assert_eq!(round(mad.next(8.0)), 2.333);
-        assert_eq!(round(mad.next(4.0)), 1.813);
-        assert_eq!(round(mad.next(4.0)), 1.48);
-        assert_eq!(round(mad.next(1.5)), 1.48);
+        assert_eq!(round(mad.nexta(1.5)), 0.0);
+        assert_eq!(round(mad.nexta(4.0)), 1.25);
+        assert_eq!(round(mad.nexta(8.0)), 2.333);
+        assert_eq!(round(mad.nexta(4.0)), 1.813);
+        assert_eq!(round(mad.nexta(4.0)), 1.48);
+        assert_eq!(round(mad.nexta(1.5)), 1.48);
     }
 
     #[test]
     fn test_reset() {
         let mut mad = MeanAbsoluteDeviation::new(5).unwrap();
 
-        assert_eq!(round(mad.next(1.5)), 0.0);
-        assert_eq!(round(mad.next(4.0)), 1.25);
+        assert_eq!(round(mad.nexta(1.5)), 0.0);
+        assert_eq!(round(mad.nexta(4.0)), 1.25);
 
         mad.reset();
 
-        assert_eq!(round(mad.next(1.5)), 0.0);
-        assert_eq!(round(mad.next(4.0)), 1.25);
+        assert_eq!(round(mad.nexta(1.5)), 0.0);
+        assert_eq!(round(mad.nexta(4.0)), 1.25);
     }
 
     #[test]

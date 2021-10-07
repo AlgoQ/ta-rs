@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::errors::{Result, TaError};
-use crate::{Close, High, Low, Next, Period, Reset, Volume};
+use crate::{Close, High, Low, Nexta, Period, Reset, Volume};
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -36,7 +36,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::MoneyFlowIndex;
-/// use tars::{Next, DataItem};
+/// use tars::{Nexta, DataItem};
 ///
 /// let mut mfi = MoneyFlowIndex::new(3).unwrap();
 /// let di = DataItem::builder()
@@ -46,7 +46,7 @@ use serde::{Deserialize, Serialize};
 ///             .open(1.5)
 ///             .volume(1000.0)
 ///             .build().unwrap();
-/// mfi.next(&di);
+/// mfi.nexta(&di);
 ///
 /// ```
 /// # Links
@@ -89,10 +89,10 @@ impl Period for MoneyFlowIndex {
     }
 }
 
-impl<T: High + Low + Close + Volume> Next<&T> for MoneyFlowIndex {
+impl<T: High + Low + Close + Volume> Nexta<&T> for MoneyFlowIndex {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> f64 {
+    fn nexta(&mut self, input: &T) -> f64 {
         let tp = (input.close() + input.high() + input.low()) / 3.0;
 
         self.index = if self.index + 1 < self.period {
@@ -176,28 +176,28 @@ mod tests {
         let mut mfi = MoneyFlowIndex::new(3).unwrap();
 
         let bar1 = Bar::new().high(3).low(1).close(2).volume(500.0);
-        assert_eq!(round(mfi.next(&bar1)), 50.0);
+        assert_eq!(round(mfi.nexta(&bar1)), 50.0);
 
         let bar2 = Bar::new().high(2.3).low(2.0).close(2.3).volume(1000.0);
-        assert_eq!(round(mfi.next(&bar2)), 100.0);
+        assert_eq!(round(mfi.nexta(&bar2)), 100.0);
 
         let bar3 = Bar::new().high(9).low(7).close(8).volume(200.0);
-        assert_eq!(round(mfi.next(&bar3)), 100.0);
+        assert_eq!(round(mfi.nexta(&bar3)), 100.0);
 
         let bar4 = Bar::new().high(5).low(3).close(4).volume(500.0);
-        assert_eq!(round(mfi.next(&bar4)), 65.517);
+        assert_eq!(round(mfi.nexta(&bar4)), 65.517);
 
         let bar5 = Bar::new().high(4).low(2).close(3).volume(5000.0);
-        assert_eq!(round(mfi.next(&bar5)), 8.602);
+        assert_eq!(round(mfi.nexta(&bar5)), 8.602);
 
         let bar6 = Bar::new().high(2).low(1).close(1.5).volume(6000.0);
-        assert_eq!(round(mfi.next(&bar6)), 0.0);
+        assert_eq!(round(mfi.nexta(&bar6)), 0.0);
 
         let bar7 = Bar::new().high(2).low(2).close(2).volume(7000.0);
-        assert_eq!(round(mfi.next(&bar7)), 36.842);
+        assert_eq!(round(mfi.nexta(&bar7)), 36.842);
 
         let bar8 = Bar::new().high(2).low(2).close(2).volume(7000.0);
-        assert_eq!(round(mfi.next(&bar8)), 60.87);
+        assert_eq!(round(mfi.nexta(&bar8)), 60.87);
     }
 
     #[test]
@@ -207,13 +207,13 @@ mod tests {
         let bar1 = Bar::new().high(3).low(1).close(2).volume(500.0);
         let bar2 = Bar::new().high(2.3).low(2.0).close(2.3).volume(1000.0);
 
-        assert_eq!(round(mfi.next(&bar1)), 50.0);
-        assert_eq!(round(mfi.next(&bar2)), 100.0);
+        assert_eq!(round(mfi.nexta(&bar1)), 50.0);
+        assert_eq!(round(mfi.nexta(&bar2)), 100.0);
 
         mfi.reset();
 
-        assert_eq!(round(mfi.next(&bar1)), 50.0);
-        assert_eq!(round(mfi.next(&bar2)), 100.0);
+        assert_eq!(round(mfi.nexta(&bar1)), 50.0);
+        assert_eq!(round(mfi.nexta(&bar2)), 100.0);
     }
 
     #[test]

@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::errors::{Result, TaError};
-use crate::traits::{Close, Next, Period, Reset};
+use crate::traits::{Close, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -25,13 +25,13 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::RateOfChange;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut roc = RateOfChange::new(2).unwrap();
-/// assert_eq!(roc.next(10.0), 0.0);            //  0
-/// assert_eq!(roc.next(9.7).round(), -3.0);    //  (9.7 - 10) / 10  * 100 = -3
-/// assert_eq!(roc.next(20.0).round(), 100.0);  //  (20 - 10)  / 10  * 100 = 100
-/// assert_eq!(roc.next(20.0).round(), 106.0);  //  (20 - 9.7) / 9.7 * 100 = 106
+/// assert_eq!(roc.nexta(10.0), 0.0);            //  0
+/// assert_eq!(roc.nexta(9.7).round(), -3.0);    //  (9.7 - 10) / 10  * 100 = -3
+/// assert_eq!(roc.nexta(20.0).round(), 100.0);  //  (20 - 10)  / 10  * 100 = 100
+/// assert_eq!(roc.nexta(20.0).round(), 106.0);  //  (20 - 9.7) / 9.7 * 100 = 106
 /// ```
 ///
 /// # Links
@@ -68,10 +68,10 @@ impl Period for RateOfChange {
     }
 }
 
-impl Next<f64> for RateOfChange {
+impl Nexta<f64> for RateOfChange {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> f64 {
+    fn nexta(&mut self, input: f64) -> f64 {
         let previous = if self.count > self.period {
             self.deque[self.index]
         } else {
@@ -94,11 +94,11 @@ impl Next<f64> for RateOfChange {
     }
 }
 
-impl<T: Close> Next<&T> for RateOfChange {
+impl<T: Close> Nexta<&T> for RateOfChange {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> f64 {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> f64 {
+        self.nexta(input.close())
     }
 }
 
@@ -142,12 +142,12 @@ mod tests {
     fn test_next_f64() {
         let mut roc = RateOfChange::new(3).unwrap();
 
-        assert_eq!(round(roc.next(10.0)), 0.0);
-        assert_eq!(round(roc.next(10.4)), 4.0);
-        assert_eq!(round(roc.next(10.57)), 5.7);
-        assert_eq!(round(roc.next(10.8)), 8.0);
-        assert_eq!(round(roc.next(10.9)), 4.808);
-        assert_eq!(round(roc.next(10.0)), -5.393);
+        assert_eq!(round(roc.nexta(10.0)), 0.0);
+        assert_eq!(round(roc.nexta(10.4)), 4.0);
+        assert_eq!(round(roc.nexta(10.57)), 5.7);
+        assert_eq!(round(roc.nexta(10.8)), 8.0);
+        assert_eq!(round(roc.nexta(10.9)), 4.808);
+        assert_eq!(round(roc.nexta(10.0)), -5.393);
     }
 
     #[test]
@@ -158,22 +158,22 @@ mod tests {
 
         let mut roc = RateOfChange::new(3).unwrap();
 
-        assert_eq!(round(roc.next(&bar(10.0))), 0.0);
-        assert_eq!(round(roc.next(&bar(10.4))), 4.0);
-        assert_eq!(round(roc.next(&bar(10.57))), 5.7);
+        assert_eq!(round(roc.nexta(&bar(10.0))), 0.0);
+        assert_eq!(round(roc.nexta(&bar(10.4))), 4.0);
+        assert_eq!(round(roc.nexta(&bar(10.57))), 5.7);
     }
 
     #[test]
     fn test_reset() {
         let mut roc = RateOfChange::new(3).unwrap();
 
-        roc.next(12.3);
-        roc.next(15.0);
+        roc.nexta(12.3);
+        roc.nexta(15.0);
 
         roc.reset();
 
-        assert_eq!(round(roc.next(10.0)), 0.0);
-        assert_eq!(round(roc.next(10.4)), 4.0);
-        assert_eq!(round(roc.next(10.57)), 5.7);
+        assert_eq!(round(roc.nexta(10.0)), 0.0);
+        assert_eq!(round(roc.nexta(10.4)), 4.0);
+        assert_eq!(round(roc.nexta(10.57)), 5.7);
     }
 }

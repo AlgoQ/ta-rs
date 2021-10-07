@@ -20,9 +20,9 @@ pub trait Period {
 /// [MACD](indicators/struct.MovingAverageConvergenceDivergence.html) it is `(f64, f64, f64)` since
 /// MACD returns 3 values.
 ///
-pub trait Next<T> {
+pub trait Nexta<T> {
     type Output;
-    fn next(&mut self, input: T) -> Self::Output;
+    fn nexta(&mut self, input: T) -> Self::Output;
 }
 
 /// Open price of a particular period.

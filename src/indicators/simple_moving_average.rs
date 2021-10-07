@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::errors::{Result, TaError};
-use crate::{Close, Next, Period, Reset};
+use crate::{Close, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -25,13 +25,13 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::SimpleMovingAverage;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut sma = SimpleMovingAverage::new(3).unwrap();
-/// assert_eq!(sma.next(10.0), 10.0);
-/// assert_eq!(sma.next(11.0), 10.5);
-/// assert_eq!(sma.next(12.0), 11.0);
-/// assert_eq!(sma.next(13.0), 12.0);
+/// assert_eq!(sma.nexta(10.0), 10.0);
+/// assert_eq!(sma.nexta(11.0), 10.5);
+/// assert_eq!(sma.nexta(12.0), 11.0);
+/// assert_eq!(sma.nexta(13.0), 12.0);
 /// ```
 ///
 /// # Links
@@ -70,10 +70,10 @@ impl Period for SimpleMovingAverage {
     }
 }
 
-impl Next<f64> for SimpleMovingAverage {
+impl Nexta<f64> for SimpleMovingAverage {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
+    fn nexta(&mut self, input: f64) -> Self::Output {
         let old_val = self.deque[self.index];
         self.deque[self.index] = input;
 
@@ -92,11 +92,11 @@ impl Next<f64> for SimpleMovingAverage {
     }
 }
 
-impl<T: Close> Next<&T> for SimpleMovingAverage {
+impl<T: Close> Nexta<&T> for SimpleMovingAverage {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.close())
     }
 }
 
@@ -139,13 +139,13 @@ mod tests {
     #[test]
     fn test_next() {
         let mut sma = SimpleMovingAverage::new(4).unwrap();
-        assert_eq!(sma.next(4.0), 4.0);
-        assert_eq!(sma.next(5.0), 4.5);
-        assert_eq!(sma.next(6.0), 5.0);
-        assert_eq!(sma.next(6.0), 5.25);
-        assert_eq!(sma.next(6.0), 5.75);
-        assert_eq!(sma.next(6.0), 6.0);
-        assert_eq!(sma.next(2.0), 5.0);
+        assert_eq!(sma.nexta(4.0), 4.0);
+        assert_eq!(sma.nexta(5.0), 4.5);
+        assert_eq!(sma.nexta(6.0), 5.0);
+        assert_eq!(sma.nexta(6.0), 5.25);
+        assert_eq!(sma.nexta(6.0), 5.75);
+        assert_eq!(sma.nexta(6.0), 6.0);
+        assert_eq!(sma.nexta(2.0), 5.0);
     }
 
     #[test]
@@ -155,21 +155,21 @@ mod tests {
         }
 
         let mut sma = SimpleMovingAverage::new(3).unwrap();
-        assert_eq!(sma.next(&bar(4.0)), 4.0);
-        assert_eq!(sma.next(&bar(4.0)), 4.0);
-        assert_eq!(sma.next(&bar(7.0)), 5.0);
-        assert_eq!(sma.next(&bar(1.0)), 4.0);
+        assert_eq!(sma.nexta(&bar(4.0)), 4.0);
+        assert_eq!(sma.nexta(&bar(4.0)), 4.0);
+        assert_eq!(sma.nexta(&bar(7.0)), 5.0);
+        assert_eq!(sma.nexta(&bar(1.0)), 4.0);
     }
 
     #[test]
     fn test_reset() {
         let mut sma = SimpleMovingAverage::new(4).unwrap();
-        assert_eq!(sma.next(4.0), 4.0);
-        assert_eq!(sma.next(5.0), 4.5);
-        assert_eq!(sma.next(6.0), 5.0);
+        assert_eq!(sma.nexta(4.0), 4.0);
+        assert_eq!(sma.nexta(5.0), 4.5);
+        assert_eq!(sma.nexta(6.0), 5.0);
 
         sma.reset();
-        assert_eq!(sma.next(99.0), 99.0);
+        assert_eq!(sma.nexta(99.0), 99.0);
     }
 
     #[test]

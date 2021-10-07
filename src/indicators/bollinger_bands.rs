@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::StandardDeviation as Sd;
-use crate::{Close, Next, Period, Reset};
+use crate::{Close, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -25,13 +25,13 @@ use serde::{Deserialize, Serialize};
 ///
 ///```
 /// use tars::indicators::{BollingerBands, BollingerBandsOutput};
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut bb = BollingerBands::new(3, 2.0_f64).unwrap();
 ///
-/// let out_0 = bb.next(2.0);
+/// let out_0 = bb.nexta(2.0);
 ///
-/// let out_1 = bb.next(5.0);
+/// let out_1 = bb.nexta(5.0);
 ///
 /// assert_eq!(out_0.average, 2.0);
 /// assert_eq!(out_0.upper, 2.0);
@@ -81,11 +81,11 @@ impl Period for BollingerBands {
     }
 }
 
-impl Next<f64> for BollingerBands {
+impl Nexta<f64> for BollingerBands {
     type Output = BollingerBandsOutput;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        let sd = self.sd.next(input);
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        let sd = self.sd.nexta(input);
         let mean = self.sd.mean();
 
         Self::Output {
@@ -96,11 +96,11 @@ impl Next<f64> for BollingerBands {
     }
 }
 
-impl<T: Close> Next<&T> for BollingerBands {
+impl<T: Close> Nexta<&T> for BollingerBands {
     type Output = BollingerBandsOutput;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.close())
     }
 }
 
@@ -140,10 +140,10 @@ mod tests {
     fn test_next() {
         let mut bb = BollingerBands::new(3, 2.0_f64).unwrap();
 
-        let a = bb.next(2.0);
-        let b = bb.next(5.0);
-        let c = bb.next(1.0);
-        let d = bb.next(6.25);
+        let a = bb.nexta(2.0);
+        let b = bb.nexta(5.0);
+        let c = bb.nexta(1.0);
+        let d = bb.nexta(6.25);
 
         assert_eq!(round(a.average), 2.0);
         assert_eq!(round(b.average), 3.5);
@@ -165,24 +165,24 @@ mod tests {
     fn test_reset() {
         let mut bb = BollingerBands::new(5, 2.0_f64).unwrap();
 
-        let out = bb.next(3.0);
+        let out = bb.nexta(3.0);
 
         assert_eq!(out.average, 3.0);
         assert_eq!(out.upper, 3.0);
         assert_eq!(out.lower, 3.0);
 
-        bb.next(2.5);
-        bb.next(3.5);
-        bb.next(4.0);
+        bb.nexta(2.5);
+        bb.nexta(3.5);
+        bb.nexta(4.0);
 
-        let out = bb.next(2.0);
+        let out = bb.nexta(2.0);
 
         assert_eq!(out.average, 3.0);
         assert_eq!(round(out.upper), 4.414);
         assert_eq!(round(out.lower), 1.586);
 
         bb.reset();
-        let out = bb.next(3.0);
+        let out = bb.nexta(3.0);
         assert_eq!(out.average, 3.0);
         assert_eq!(out.upper, 3.0);
         assert_eq!(out.lower, 3.0);

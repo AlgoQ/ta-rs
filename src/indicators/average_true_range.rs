@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::{ExponentialMovingAverage, TrueRange};
-use crate::{Close, High, Low, Next, Period, Reset};
+use crate::{Close, High, Low, Nexta, Period, Reset};
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -32,7 +32,7 @@ use serde::{Deserialize, Serialize};
 /// extern crate tars;
 /// #[macro_use] extern crate assert_approx_eq;
 ///
-/// use tars::{Next, DataItem};
+/// use tars::{Nexta, DataItem};
 /// use tars::indicators::AverageTrueRange;
 ///
 /// fn main() {
@@ -53,7 +53,7 @@ use serde::{Deserialize, Serialize};
 ///             .open(open)
 ///             .volume(1000.0)
 ///             .build().unwrap();
-///         assert_approx_eq!(indicator.next(&di), atr);
+///         assert_approx_eq!(indicator.nexta(&di), atr);
 ///     }
 /// }
 #[doc(alias = "ATR")]
@@ -79,19 +79,19 @@ impl Period for AverageTrueRange {
     }
 }
 
-impl Next<f64> for AverageTrueRange {
+impl Nexta<f64> for AverageTrueRange {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        self.ema.next(self.true_range.next(input))
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        self.ema.nexta(self.true_range.nexta(input))
     }
 }
 
-impl<T: High + Low + Close> Next<&T> for AverageTrueRange {
+impl<T: High + Low + Close> Nexta<&T> for AverageTrueRange {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.ema.next(self.true_range.next(input))
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.ema.nexta(self.true_range.nexta(input))
     }
 }
 
@@ -134,9 +134,9 @@ mod tests {
         let bar2 = Bar::new().high(11).low(9).close(9.5);
         let bar3 = Bar::new().high(9).low(5).close(8);
 
-        assert_eq!(atr.next(&bar1), 2.5);
-        assert_eq!(atr.next(&bar2), 2.25);
-        assert_eq!(atr.next(&bar3), 3.375);
+        assert_eq!(atr.nexta(&bar1), 2.5);
+        assert_eq!(atr.nexta(&bar2), 2.25);
+        assert_eq!(atr.nexta(&bar3), 3.375);
     }
 
     #[test]
@@ -146,12 +146,12 @@ mod tests {
         let bar1 = Bar::new().high(10).low(7.5).close(9);
         let bar2 = Bar::new().high(11).low(9).close(9.5);
 
-        atr.next(&bar1);
-        atr.next(&bar2);
+        atr.nexta(&bar1);
+        atr.nexta(&bar2);
 
         atr.reset();
         let bar3 = Bar::new().high(60).low(15).close(51);
-        assert_eq!(atr.next(&bar3), 45.0);
+        assert_eq!(atr.nexta(&bar3), 45.0);
     }
 
     #[test]

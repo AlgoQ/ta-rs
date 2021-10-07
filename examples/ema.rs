@@ -1,6 +1,6 @@
 use tars::indicators::ExponentialMovingAverage as Ema;
 use tars::DataItem;
-use tars::Next;
+use tars::Nexta;
 
 fn main() {
     let mut ema = Ema::new(9).unwrap();
@@ -17,7 +17,7 @@ fn main() {
             .volume(volume)
             .build()
             .unwrap();
-        let ema_val = ema.next(&dt);
+        let ema_val = ema.nexta(&dt);
         println!("{}: {} = {:2.2}", date, ema, ema_val);
     }
 }

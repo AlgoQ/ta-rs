@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::errors::{Result, TaError};
-use crate::{Close, Next, Period, Reset};
+use crate::{Close, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -38,13 +38,13 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::ExponentialMovingAverage;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut ema = ExponentialMovingAverage::new(3).unwrap();
-/// assert_eq!(ema.next(2.0), 2.0);
-/// assert_eq!(ema.next(5.0), 3.5);
-/// assert_eq!(ema.next(1.0), 2.25);
-/// assert_eq!(ema.next(6.25), 4.25);
+/// assert_eq!(ema.nexta(2.0), 2.0);
+/// assert_eq!(ema.nexta(5.0), 3.5);
+/// assert_eq!(ema.nexta(1.0), 2.25);
+/// assert_eq!(ema.nexta(6.25), 4.25);
 /// ```
 ///
 /// # Links
@@ -82,10 +82,10 @@ impl Period for ExponentialMovingAverage {
     }
 }
 
-impl Next<f64> for ExponentialMovingAverage {
+impl Nexta<f64> for ExponentialMovingAverage {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
+    fn nexta(&mut self, input: f64) -> Self::Output {
         if self.is_new {
             self.is_new = false;
             self.current = input;
@@ -96,11 +96,11 @@ impl Next<f64> for ExponentialMovingAverage {
     }
 }
 
-impl<T: Close> Next<&T> for ExponentialMovingAverage {
+impl<T: Close> Nexta<&T> for ExponentialMovingAverage {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.close())
     }
 }
 

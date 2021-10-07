@@ -89,15 +89,15 @@ macro_rules! test_indicator {
             // ensure Default trait is implemented
             let mut indicator = $i::default();
 
-            // ensure Next<f64> is implemented
-            let first_output = indicator.next(12.3);
+            // ensure Nexta<f64> is implemented
+            let first_output = indicator.nexta(12.3);
 
-            // ensure next accepts &DataItem as well
-            indicator.next(&bar);
+            // ensure nexta accepts &DataItem as well
+            indicator.nexta(&bar);
 
             // ensure Reset is implemented and works correctly
             indicator.reset();
-            assert_eq!(indicator.next(12.3), first_output);
+            assert_eq!(indicator.nexta(12.3), first_output);
 
             // ensure Display is implemented
             format!("{}", indicator);

@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::ExponentialMovingAverage as Ema;
-use crate::{Close, Next, Period, Reset};
+use crate::{Close, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -32,16 +32,16 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::MovingAverageConvergenceDivergence as Macd;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut macd = Macd::new(3, 6, 4).unwrap();
 ///
-/// assert_eq!(round(macd.next(2.0).into()), (0.0, 0.0, 0.0));
-/// assert_eq!(round(macd.next(3.0).into()), (0.21, 0.09, 0.13));
-/// assert_eq!(round(macd.next(4.2).into()), (0.52, 0.26, 0.26));
-/// assert_eq!(round(macd.next(7.0).into()), (1.15, 0.62, 0.54));
-/// assert_eq!(round(macd.next(6.7).into()), (1.15, 0.83, 0.32));
-/// assert_eq!(round(macd.next(6.5).into()), (0.94, 0.87, 0.07));
+/// assert_eq!(round(macd.nexta(2.0).into()), (0.0, 0.0, 0.0));
+/// assert_eq!(round(macd.nexta(3.0).into()), (0.21, 0.09, 0.13));
+/// assert_eq!(round(macd.nexta(4.2).into()), (0.52, 0.26, 0.26));
+/// assert_eq!(round(macd.nexta(7.0).into()), (1.15, 0.62, 0.54));
+/// assert_eq!(round(macd.nexta(6.7).into()), (1.15, 0.83, 0.32));
+/// assert_eq!(round(macd.nexta(6.5).into()), (0.94, 0.87, 0.07));
 ///
 /// fn round(nums: (f64, f64, f64)) -> (f64, f64, f64) {
 ///     let n0 = (nums.0 * 100.0).round() / 100.0;
@@ -82,15 +82,15 @@ impl From<MovingAverageConvergenceDivergenceOutput> for (f64, f64, f64) {
     }
 }
 
-impl Next<f64> for MovingAverageConvergenceDivergence {
+impl Nexta<f64> for MovingAverageConvergenceDivergence {
     type Output = MovingAverageConvergenceDivergenceOutput;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        let fast_val = self.fast_ema.next(input);
-        let slow_val = self.slow_ema.next(input);
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        let fast_val = self.fast_ema.nexta(input);
+        let slow_val = self.slow_ema.nexta(input);
 
         let macd = fast_val - slow_val;
-        let signal = self.signal_ema.next(macd);
+        let signal = self.signal_ema.nexta(macd);
         let histogram = macd - signal;
 
         MovingAverageConvergenceDivergenceOutput {
@@ -101,11 +101,11 @@ impl Next<f64> for MovingAverageConvergenceDivergence {
     }
 }
 
-impl<T: Close> Next<&T> for MovingAverageConvergenceDivergence {
+impl<T: Close> Nexta<&T> for MovingAverageConvergenceDivergence {
     type Output = MovingAverageConvergenceDivergenceOutput;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.close())
     }
 }
 
@@ -162,25 +162,25 @@ mod tests {
     fn test_macd() {
         let mut macd = Macd::new(3, 6, 4).unwrap();
 
-        assert_eq!(round(macd.next(2.0).into()), (0.0, 0.0, 0.0));
-        assert_eq!(round(macd.next(3.0).into()), (0.21, 0.09, 0.13));
-        assert_eq!(round(macd.next(4.2).into()), (0.52, 0.26, 0.26));
-        assert_eq!(round(macd.next(7.0).into()), (1.15, 0.62, 0.54));
-        assert_eq!(round(macd.next(6.7).into()), (1.15, 0.83, 0.32));
-        assert_eq!(round(macd.next(6.5).into()), (0.94, 0.87, 0.07));
+        assert_eq!(round(macd.nexta(2.0).into()), (0.0, 0.0, 0.0));
+        assert_eq!(round(macd.nexta(3.0).into()), (0.21, 0.09, 0.13));
+        assert_eq!(round(macd.nexta(4.2).into()), (0.52, 0.26, 0.26));
+        assert_eq!(round(macd.nexta(7.0).into()), (1.15, 0.62, 0.54));
+        assert_eq!(round(macd.nexta(6.7).into()), (1.15, 0.83, 0.32));
+        assert_eq!(round(macd.nexta(6.5).into()), (0.94, 0.87, 0.07));
     }
 
     #[test]
     fn test_reset() {
         let mut macd = Macd::new(3, 6, 4).unwrap();
 
-        assert_eq!(round(macd.next(2.0).into()), (0.0, 0.0, 0.0));
-        assert_eq!(round(macd.next(3.0).into()), (0.21, 0.09, 0.13));
+        assert_eq!(round(macd.nexta(2.0).into()), (0.0, 0.0, 0.0));
+        assert_eq!(round(macd.nexta(3.0).into()), (0.21, 0.09, 0.13));
 
         macd.reset();
 
-        assert_eq!(round(macd.next(2.0).into()), (0.0, 0.0, 0.0));
-        assert_eq!(round(macd.next(3.0).into()), (0.21, 0.09, 0.13));
+        assert_eq!(round(macd.nexta(2.0).into()), (0.0, 0.0, 0.0));
+        assert_eq!(round(macd.nexta(3.0).into()), (0.21, 0.09, 0.13));
     }
 
     #[test]

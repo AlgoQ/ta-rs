@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::errors::Result;
 use crate::indicators::{AverageTrueRange, Maximum, Minimum};
-use crate::{Close, High, Low, Next, Period, Reset};
+use crate::{Close, High, Low, Nexta, Period, Reset};
 
 /// Chandelier Exit (CE).
 ///
@@ -28,7 +28,7 @@ use crate::{Close, High, Low, Next, Period, Reset};
 ///
 /// ```
 /// use tars::indicators::ChandelierExit;
-/// use tars::{Next, DataItem};
+/// use tars::{Nexta, DataItem};
 ///
 /// let value1 = DataItem::builder()
 /// .open(21.0).high(22.0).low(20.0).close(21.0).volume(1.0).build().unwrap();
@@ -37,11 +37,11 @@ use crate::{Close, High, Low, Next, Period, Reset};
 ///
 /// let mut ce = ChandelierExit::default();
 ///
-/// let first = ce.next(&value1);
+/// let first = ce.nexta(&value1);
 /// assert_eq!(first.long, 16.0);
 /// assert_eq!(first.short, 26.0);
 ///
-/// let second = ce.next(&value2);
+/// let second = ce.nexta(&value2);
 /// assert_eq!((second.long * 100.0).round() / 100.0, 17.74);
 /// assert_eq!((second.short * 100.0).round() / 100.0, 26.26);
 /// ```
@@ -93,13 +93,13 @@ impl Period for ChandelierExit {
     }
 }
 
-impl<T: Low + High + Close> Next<&T> for ChandelierExit {
+impl<T: Low + High + Close> Nexta<&T> for ChandelierExit {
     type Output = ChandelierExitOutput;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        let atr = self.atr.next(input) * self.multiplier;
-        let min = self.min.next(input);
-        let max = self.max.next(input);
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        let atr = self.atr.nexta(input) * self.multiplier;
+        let min = self.min.nexta(input);
+        let max = self.max.nexta(input);
 
         ChandelierExitOutput {
             long: max - atr,
@@ -154,22 +154,22 @@ mod tests {
         let mut ce = Ce::new(5, 2.0).unwrap();
 
         let bar1 = Bar::new().high(2).low(1).close(1.5);
-        assert_eq!(round(ce.next(&bar1).into()), (0.0, 3.0));
+        assert_eq!(round(ce.nexta(&bar1).into()), (0.0, 3.0));
 
         let bar2 = Bar::new().high(5).low(3).close(4);
-        assert_eq!(round(ce.next(&bar2).into()), (1.33, 4.67));
+        assert_eq!(round(ce.nexta(&bar2).into()), (1.33, 4.67));
 
         let bar3 = Bar::new().high(9).low(7).close(8);
-        assert_eq!(round(ce.next(&bar3).into()), (3.22, 6.78));
+        assert_eq!(round(ce.nexta(&bar3).into()), (3.22, 6.78));
 
         let bar4 = Bar::new().high(5).low(3).close(4);
-        assert_eq!(round(ce.next(&bar4).into()), (1.81, 8.19));
+        assert_eq!(round(ce.nexta(&bar4).into()), (1.81, 8.19));
 
         let bar5 = Bar::new().high(5).low(3).close(4);
-        assert_eq!(round(ce.next(&bar5).into()), (2.88, 7.12));
+        assert_eq!(round(ce.nexta(&bar5).into()), (2.88, 7.12));
 
         let bar6 = Bar::new().high(2).low(1).close(1.5);
-        assert_eq!(round(ce.next(&bar6).into()), (2.92, 7.08));
+        assert_eq!(round(ce.nexta(&bar6).into()), (2.92, 7.08));
     }
 
     #[test]
@@ -179,13 +179,13 @@ mod tests {
         let bar1 = Bar::new().high(2).low(1).close(1.5);
         let bar2 = Bar::new().high(5).low(3).close(4);
 
-        assert_eq!(round(ce.next(&bar1).into()), (0.0, 3.0));
-        assert_eq!(round(ce.next(&bar2).into()), (1.33, 4.67));
+        assert_eq!(round(ce.nexta(&bar1).into()), (0.0, 3.0));
+        assert_eq!(round(ce.nexta(&bar2).into()), (1.33, 4.67));
 
         ce.reset();
 
-        assert_eq!(round(ce.next(&bar1).into()), (0.0, 3.0));
-        assert_eq!(round(ce.next(&bar2).into()), (1.33, 4.67));
+        assert_eq!(round(ce.nexta(&bar1).into()), (0.0, 3.0));
+        assert_eq!(round(ce.nexta(&bar2).into()), (1.33, 4.67));
     }
 
     #[test]

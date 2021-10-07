@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::{Maximum, Minimum};
-use crate::{Close, High, Low, Next, Period, Reset};
+use crate::{Close, High, Low, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -31,14 +31,14 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::FastStochastic;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut stoch = FastStochastic::new(5).unwrap();
-/// assert_eq!(stoch.next(20.0), 50.0);
-/// assert_eq!(stoch.next(30.0), 100.0);
-/// assert_eq!(stoch.next(40.0), 100.0);
-/// assert_eq!(stoch.next(35.0), 75.0);
-/// assert_eq!(stoch.next(15.0), 0.0);
+/// assert_eq!(stoch.nexta(20.0), 50.0);
+/// assert_eq!(stoch.nexta(30.0), 100.0);
+/// assert_eq!(stoch.nexta(40.0), 100.0);
+/// assert_eq!(stoch.nexta(35.0), 75.0);
+/// assert_eq!(stoch.nexta(15.0), 0.0);
 /// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone)]
@@ -64,12 +64,12 @@ impl Period for FastStochastic {
     }
 }
 
-impl Next<f64> for FastStochastic {
+impl Nexta<f64> for FastStochastic {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        let min = self.minimum.next(input);
-        let max = self.maximum.next(input);
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        let min = self.minimum.nexta(input);
+        let max = self.maximum.nexta(input);
 
         if min == max {
             // When only 1 input was given, than min and max are the same,
@@ -81,12 +81,12 @@ impl Next<f64> for FastStochastic {
     }
 }
 
-impl<T: High + Low + Close> Next<&T> for FastStochastic {
+impl<T: High + Low + Close> Nexta<&T> for FastStochastic {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        let highest = self.maximum.next(input.high());
-        let lowest = self.minimum.next(input.low());
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        let highest = self.maximum.nexta(input.high());
+        let lowest = self.minimum.nexta(input.low());
         let close = input.close();
 
         if highest == lowest {
@@ -133,11 +133,11 @@ mod tests {
     #[test]
     fn test_next_with_f64() {
         let mut stoch = FastStochastic::new(3).unwrap();
-        assert_eq!(stoch.next(0.0), 50.0);
-        assert_eq!(stoch.next(200.0), 100.0);
-        assert_eq!(stoch.next(100.0), 50.0);
-        assert_eq!(stoch.next(120.0), 20.0);
-        assert_eq!(stoch.next(115.0), 75.0);
+        assert_eq!(stoch.nexta(0.0), 50.0);
+        assert_eq!(stoch.nexta(200.0), 100.0);
+        assert_eq!(stoch.nexta(100.0), 50.0);
+        assert_eq!(stoch.nexta(120.0), 20.0);
+        assert_eq!(stoch.nexta(115.0), 75.0);
     }
 
     #[test]
@@ -156,22 +156,22 @@ mod tests {
 
         for (high, low, close, expected) in test_data {
             let input_bar = Bar::new().high(high).low(low).close(close);
-            assert_eq!(stoch.next(&input_bar), expected);
+            assert_eq!(stoch.nexta(&input_bar), expected);
         }
     }
 
     #[test]
     fn test_reset() {
         let mut indicator = FastStochastic::new(10).unwrap();
-        assert_eq!(indicator.next(10.0), 50.0);
-        assert_eq!(indicator.next(210.0), 100.0);
-        assert_eq!(indicator.next(10.0), 0.0);
-        assert_eq!(indicator.next(60.0), 25.0);
+        assert_eq!(indicator.nexta(10.0), 50.0);
+        assert_eq!(indicator.nexta(210.0), 100.0);
+        assert_eq!(indicator.nexta(10.0), 0.0);
+        assert_eq!(indicator.nexta(60.0), 25.0);
 
         indicator.reset();
-        assert_eq!(indicator.next(10.0), 50.0);
-        assert_eq!(indicator.next(20.0), 100.0);
-        assert_eq!(indicator.next(12.5), 25.0);
+        assert_eq!(indicator.nexta(10.0), 50.0);
+        assert_eq!(indicator.nexta(20.0), 100.0);
+        assert_eq!(indicator.nexta(12.5), 25.0);
     }
 
     #[test]

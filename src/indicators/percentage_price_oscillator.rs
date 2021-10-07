@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::ExponentialMovingAverage as Ema;
-use crate::{Close, Next, Period, Reset};
+use crate::{Close, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -32,16 +32,16 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::PercentagePriceOscillator as Ppo;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut ppo = Ppo::new(3, 6, 4).unwrap();
 ///
-/// assert_eq!(round(ppo.next(2.0).into()), (0.0, 0.0, 0.0));
-/// assert_eq!(round(ppo.next(3.0).into()), (9.38, 3.75, 5.63));
-/// assert_eq!(round(ppo.next(4.2).into()), (18.26, 9.56, 8.71));
-/// assert_eq!(round(ppo.next(7.0).into()), (28.62, 17.18, 11.44));
-/// assert_eq!(round(ppo.next(6.7).into()), (24.01, 19.91, 4.09));
-/// assert_eq!(round(ppo.next(6.5).into()), (17.84, 19.08, -1.24));
+/// assert_eq!(round(ppo.nexta(2.0).into()), (0.0, 0.0, 0.0));
+/// assert_eq!(round(ppo.nexta(3.0).into()), (9.38, 3.75, 5.63));
+/// assert_eq!(round(ppo.nexta(4.2).into()), (18.26, 9.56, 8.71));
+/// assert_eq!(round(ppo.nexta(7.0).into()), (28.62, 17.18, 11.44));
+/// assert_eq!(round(ppo.nexta(6.7).into()), (24.01, 19.91, 4.09));
+/// assert_eq!(round(ppo.nexta(6.5).into()), (17.84, 19.08, -1.24));
 ///
 /// fn round(nums: (f64, f64, f64)) -> (f64, f64, f64) {
 ///     let n0 = (nums.0 * 100.0).round() / 100.0;
@@ -82,15 +82,15 @@ impl From<PercentagePriceOscillatorOutput> for (f64, f64, f64) {
     }
 }
 
-impl Next<f64> for PercentagePriceOscillator {
+impl Nexta<f64> for PercentagePriceOscillator {
     type Output = PercentagePriceOscillatorOutput;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        let fast_val = self.fast_ema.next(input);
-        let slow_val = self.slow_ema.next(input);
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        let fast_val = self.fast_ema.nexta(input);
+        let slow_val = self.slow_ema.nexta(input);
 
         let ppo = (fast_val - slow_val) / slow_val * 100.0;
-        let signal = self.signal_ema.next(ppo);
+        let signal = self.signal_ema.nexta(ppo);
         let histogram = ppo - signal;
 
         PercentagePriceOscillatorOutput {
@@ -101,11 +101,11 @@ impl Next<f64> for PercentagePriceOscillator {
     }
 }
 
-impl<T: Close> Next<&T> for PercentagePriceOscillator {
+impl<T: Close> Nexta<&T> for PercentagePriceOscillator {
     type Output = PercentagePriceOscillatorOutput;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.close())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.close())
     }
 }
 
@@ -162,25 +162,25 @@ mod tests {
     fn test_next() {
         let mut ppo = Ppo::new(3, 6, 4).unwrap();
 
-        assert_eq!(round(ppo.next(2.0).into()), (0.0, 0.0, 0.0));
-        assert_eq!(round(ppo.next(3.0).into()), (9.38, 3.75, 5.63));
-        assert_eq!(round(ppo.next(4.2).into()), (18.26, 9.56, 8.71));
-        assert_eq!(round(ppo.next(7.0).into()), (28.62, 17.18, 11.44));
-        assert_eq!(round(ppo.next(6.7).into()), (24.01, 19.91, 4.09));
-        assert_eq!(round(ppo.next(6.5).into()), (17.84, 19.08, -1.24));
+        assert_eq!(round(ppo.nexta(2.0).into()), (0.0, 0.0, 0.0));
+        assert_eq!(round(ppo.nexta(3.0).into()), (9.38, 3.75, 5.63));
+        assert_eq!(round(ppo.nexta(4.2).into()), (18.26, 9.56, 8.71));
+        assert_eq!(round(ppo.nexta(7.0).into()), (28.62, 17.18, 11.44));
+        assert_eq!(round(ppo.nexta(6.7).into()), (24.01, 19.91, 4.09));
+        assert_eq!(round(ppo.nexta(6.5).into()), (17.84, 19.08, -1.24));
     }
 
     #[test]
     fn test_reset() {
         let mut ppo = Ppo::new(3, 6, 4).unwrap();
 
-        assert_eq!(round(ppo.next(2.0).into()), (0.0, 0.0, 0.0));
-        assert_eq!(round(ppo.next(3.0).into()), (9.38, 3.75, 5.63));
+        assert_eq!(round(ppo.nexta(2.0).into()), (0.0, 0.0, 0.0));
+        assert_eq!(round(ppo.nexta(3.0).into()), (9.38, 3.75, 5.63));
 
         ppo.reset();
 
-        assert_eq!(round(ppo.next(2.0).into()), (0.0, 0.0, 0.0));
-        assert_eq!(round(ppo.next(3.0).into()), (9.38, 3.75, 5.63));
+        assert_eq!(round(ppo.nexta(2.0).into()), (0.0, 0.0, 0.0));
+        assert_eq!(round(ppo.nexta(3.0).into()), (9.38, 3.75, 5.63));
     }
 
     #[test]

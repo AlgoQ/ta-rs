@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::helpers::max3;
-use crate::{Close, High, Low, Next, Reset};
+use crate::{Close, High, Low, Nexta, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 /// extern crate tars;
 /// #[macro_use] extern crate assert_approx_eq;
 ///
-/// use tars::{Next, DataItem};
+/// use tars::{Nexta, DataItem};
 /// use tars::indicators::TrueRange;
 ///
 /// fn main() {
@@ -45,7 +45,7 @@ use serde::{Deserialize, Serialize};
 ///             .open(open)
 ///             .volume(1000.0)
 ///             .build().unwrap();
-///         assert_approx_eq!(indicator.next(&di), tr);
+///         assert_approx_eq!(indicator.nexta(&di), tr);
 ///     }
 /// }
 /// ```
@@ -73,10 +73,10 @@ impl fmt::Display for TrueRange {
     }
 }
 
-impl Next<f64> for TrueRange {
+impl Nexta<f64> for TrueRange {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
+    fn nexta(&mut self, input: f64) -> Self::Output {
         let distance = match self.prev_close {
             Some(prev) => (input - prev).abs(),
             None => 0.0,
@@ -86,10 +86,10 @@ impl Next<f64> for TrueRange {
     }
 }
 
-impl<T: High + Low + Close> Next<&T> for TrueRange {
+impl<T: High + Low + Close> Nexta<&T> for TrueRange {
     type Output = f64;
 
-    fn next(&mut self, bar: &T) -> Self::Output {
+    fn nexta(&mut self, bar: &T) -> Self::Output {
         let max_dist = match self.prev_close {
             Some(prev_close) => {
                 let dist1 = bar.high() - bar.low();
@@ -120,9 +120,9 @@ mod tests {
     #[test]
     fn test_next_f64() {
         let mut tr = TrueRange::new();
-        assert_eq!(round(tr.next(2.5)), 0.0);
-        assert_eq!(round(tr.next(3.6)), 1.1);
-        assert_eq!(round(tr.next(3.3)), 0.3);
+        assert_eq!(round(tr.nexta(2.5)), 0.0);
+        assert_eq!(round(tr.nexta(3.6)), 1.1);
+        assert_eq!(round(tr.nexta(3.3)), 0.3);
     }
 
     #[test]
@@ -133,9 +133,9 @@ mod tests {
         let bar2 = Bar::new().high(11).low(9).close(9.5);
         let bar3 = Bar::new().high(9).low(5).close(8);
 
-        assert_eq!(tr.next(&bar1), 2.5);
-        assert_eq!(tr.next(&bar2), 2.0);
-        assert_eq!(tr.next(&bar3), 4.5);
+        assert_eq!(tr.nexta(&bar1), 2.5);
+        assert_eq!(tr.nexta(&bar2), 2.0);
+        assert_eq!(tr.nexta(&bar3), 4.5);
     }
 
     #[test]
@@ -145,12 +145,12 @@ mod tests {
         let bar1 = Bar::new().high(10).low(7.5).close(9);
         let bar2 = Bar::new().high(11).low(9).close(9.5);
 
-        tr.next(&bar1);
-        tr.next(&bar2);
+        tr.nexta(&bar1);
+        tr.nexta(&bar2);
 
         tr.reset();
         let bar3 = Bar::new().high(60).low(15).close(51);
-        assert_eq!(tr.next(&bar3), 45.0);
+        assert_eq!(tr.nexta(&bar3), 45.0);
     }
 
     #[test]

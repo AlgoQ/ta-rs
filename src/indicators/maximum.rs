@@ -2,7 +2,7 @@ use std::f64::INFINITY;
 use std::fmt;
 
 use crate::errors::{Result, TaError};
-use crate::{High, Next, Period, Reset};
+use crate::{High, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -16,14 +16,14 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::Maximum;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut max = Maximum::new(3).unwrap();
-/// assert_eq!(max.next(7.0), 7.0);
-/// assert_eq!(max.next(5.0), 7.0);
-/// assert_eq!(max.next(4.0), 7.0);
-/// assert_eq!(max.next(4.0), 5.0);
-/// assert_eq!(max.next(8.0), 8.0);
+/// assert_eq!(max.nexta(7.0), 7.0);
+/// assert_eq!(max.nexta(5.0), 7.0);
+/// assert_eq!(max.nexta(4.0), 7.0);
+/// assert_eq!(max.nexta(4.0), 5.0);
+/// assert_eq!(max.nexta(8.0), 8.0);
 /// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone)]
@@ -68,10 +68,10 @@ impl Period for Maximum {
     }
 }
 
-impl Next<f64> for Maximum {
+impl Nexta<f64> for Maximum {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
+    fn nexta(&mut self, input: f64) -> Self::Output {
         self.deque[self.cur_index] = input;
 
         if input > self.deque[self.max_index] {
@@ -90,11 +90,11 @@ impl Next<f64> for Maximum {
     }
 }
 
-impl<T: High> Next<&T> for Maximum {
+impl<T: High> Nexta<&T> for Maximum {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.high())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.high())
     }
 }
 
@@ -135,15 +135,15 @@ mod tests {
     fn test_next() {
         let mut max = Maximum::new(3).unwrap();
 
-        assert_eq!(max.next(4.0), 4.0);
-        assert_eq!(max.next(1.2), 4.0);
-        assert_eq!(max.next(5.0), 5.0);
-        assert_eq!(max.next(3.0), 5.0);
-        assert_eq!(max.next(4.0), 5.0);
-        assert_eq!(max.next(0.0), 4.0);
-        assert_eq!(max.next(-1.0), 4.0);
-        assert_eq!(max.next(-2.0), 0.0);
-        assert_eq!(max.next(-1.5), -1.0);
+        assert_eq!(max.nexta(4.0), 4.0);
+        assert_eq!(max.nexta(1.2), 4.0);
+        assert_eq!(max.nexta(5.0), 5.0);
+        assert_eq!(max.nexta(3.0), 5.0);
+        assert_eq!(max.nexta(4.0), 5.0);
+        assert_eq!(max.nexta(0.0), 4.0);
+        assert_eq!(max.nexta(-1.0), 4.0);
+        assert_eq!(max.nexta(-2.0), 0.0);
+        assert_eq!(max.nexta(-1.5), -1.0);
     }
 
     #[test]
@@ -154,21 +154,21 @@ mod tests {
 
         let mut max = Maximum::new(2).unwrap();
 
-        assert_eq!(max.next(&bar(1.1)), 1.1);
-        assert_eq!(max.next(&bar(4.0)), 4.0);
-        assert_eq!(max.next(&bar(3.5)), 4.0);
-        assert_eq!(max.next(&bar(2.0)), 3.5);
+        assert_eq!(max.nexta(&bar(1.1)), 1.1);
+        assert_eq!(max.nexta(&bar(4.0)), 4.0);
+        assert_eq!(max.nexta(&bar(3.5)), 4.0);
+        assert_eq!(max.nexta(&bar(2.0)), 3.5);
     }
 
     #[test]
     fn test_reset() {
         let mut max = Maximum::new(100).unwrap();
-        assert_eq!(max.next(4.0), 4.0);
-        assert_eq!(max.next(10.0), 10.0);
-        assert_eq!(max.next(4.0), 10.0);
+        assert_eq!(max.nexta(4.0), 4.0);
+        assert_eq!(max.nexta(10.0), 10.0);
+        assert_eq!(max.nexta(4.0), 10.0);
 
         max.reset();
-        assert_eq!(max.next(4.0), 4.0);
+        assert_eq!(max.nexta(4.0), 4.0);
     }
 
     #[test]

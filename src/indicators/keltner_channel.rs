@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::{AverageTrueRange, ExponentialMovingAverage};
-use crate::{Close, High, Low, Next, Period, Reset};
+use crate::{Close, High, Low, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -26,13 +26,13 @@ use serde::{Deserialize, Serialize};
 ///
 ///```
 /// use tars::indicators::{KeltnerChannel, KeltnerChannelOutput};
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut kc = KeltnerChannel::new(3, 2.0_f64).unwrap();
 ///
-/// let out_0 = kc.next(2.0);
+/// let out_0 = kc.nexta(2.0);
 ///
-/// let out_1 = kc.next(5.0);
+/// let out_1 = kc.nexta(5.0);
 ///
 /// assert_eq!(out_0.average, 2.0);
 /// assert_eq!(out_0.upper, 2.0);
@@ -84,12 +84,12 @@ impl Period for KeltnerChannel {
     }
 }
 
-impl Next<f64> for KeltnerChannel {
+impl Nexta<f64> for KeltnerChannel {
     type Output = KeltnerChannelOutput;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        let atr = self.atr.next(input);
-        let average = self.ema.next(input);
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        let atr = self.atr.nexta(input);
+        let average = self.ema.nexta(input);
 
         Self::Output {
             average,
@@ -99,14 +99,14 @@ impl Next<f64> for KeltnerChannel {
     }
 }
 
-impl<T: Close + High + Low> Next<&T> for KeltnerChannel {
+impl<T: Close + High + Low> Nexta<&T> for KeltnerChannel {
     type Output = KeltnerChannelOutput;
 
-    fn next(&mut self, input: &T) -> Self::Output {
+    fn nexta(&mut self, input: &T) -> Self::Output {
         let typical_price = (input.close() + input.high() + input.low()) / 3.0;
 
-        let average = self.ema.next(typical_price);
-        let atr = self.atr.next(input);
+        let average = self.ema.nexta(typical_price);
+        let atr = self.atr.nexta(input);
 
         Self::Output {
             average,
@@ -153,10 +153,10 @@ mod tests {
     fn test_next() {
         let mut kc = KeltnerChannel::new(3, 2.0_f64).unwrap();
 
-        let a = kc.next(2.0);
-        let b = kc.next(5.0);
-        let c = kc.next(1.0);
-        let d = kc.next(6.25);
+        let a = kc.nexta(2.0);
+        let b = kc.nexta(5.0);
+        let c = kc.nexta(1.0);
+        let d = kc.nexta(6.25);
 
         assert_eq!(round(a.average), 2.0);
         assert_eq!(round(b.average), 3.5);
@@ -179,19 +179,19 @@ mod tests {
         let mut kc = KeltnerChannel::new(3, 2.0_f64).unwrap();
 
         let dt1 = Bar::new().low(1.2).high(1.7).close(1.3); // typical_price = 1.4
-        let o1 = kc.next(&dt1);
+        let o1 = kc.nexta(&dt1);
         assert_eq!(round(o1.average), 1.4);
         assert_eq!(round(o1.lower), 0.4);
         assert_eq!(round(o1.upper), 2.4);
 
         let dt2 = Bar::new().low(1.3).high(1.8).close(1.4); // typical_price = 1.5
-        let o2 = kc.next(&dt2);
+        let o2 = kc.nexta(&dt2);
         assert_eq!(round(o2.average), 1.45);
         assert_eq!(round(o2.lower), 0.45);
         assert_eq!(round(o2.upper), 2.45);
 
         let dt3 = Bar::new().low(1.4).high(1.9).close(1.5); // typical_price = 1.6
-        let o3 = kc.next(&dt3);
+        let o3 = kc.nexta(&dt3);
         assert_eq!(round(o3.average), 1.525);
         assert_eq!(round(o3.lower), 0.525);
         assert_eq!(round(o3.upper), 2.525);
@@ -201,24 +201,24 @@ mod tests {
     fn test_reset() {
         let mut kc = KeltnerChannel::new(5, 2.0_f64).unwrap();
 
-        let out = kc.next(3.0);
+        let out = kc.nexta(3.0);
 
         assert_eq!(out.average, 3.0);
         assert_eq!(out.upper, 3.0);
         assert_eq!(out.lower, 3.0);
 
-        kc.next(2.5);
-        kc.next(3.5);
-        kc.next(4.0);
+        kc.nexta(2.5);
+        kc.nexta(3.5);
+        kc.nexta(4.0);
 
-        let out = kc.next(2.0);
+        let out = kc.nexta(2.0);
 
         assert_eq!(round(out.average), 2.914);
         assert_eq!(round(out.upper), 4.864);
         assert_eq!(round(out.lower), 0.963);
 
         kc.reset();
-        let out = kc.next(3.0);
+        let out = kc.nexta(3.0);
         assert_eq!(out.average, 3.0);
         assert_eq!(out.lower, 3.0);
         assert_eq!(out.upper, 3.0);

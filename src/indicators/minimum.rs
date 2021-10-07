@@ -2,7 +2,7 @@ use std::f64::INFINITY;
 use std::fmt;
 
 use crate::errors::{Result, TaError};
-use crate::{Low, Next, Period, Reset};
+use crate::{Low, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -16,13 +16,13 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::Minimum;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut min = Minimum::new(3).unwrap();
-/// assert_eq!(min.next(10.0), 10.0);
-/// assert_eq!(min.next(11.0), 10.0);
-/// assert_eq!(min.next(12.0), 10.0);
-/// assert_eq!(min.next(13.0), 11.0);
+/// assert_eq!(min.nexta(10.0), 10.0);
+/// assert_eq!(min.nexta(11.0), 10.0);
+/// assert_eq!(min.nexta(12.0), 10.0);
+/// assert_eq!(min.nexta(13.0), 11.0);
 /// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone)]
@@ -67,10 +67,10 @@ impl Period for Minimum {
     }
 }
 
-impl Next<f64> for Minimum {
+impl Nexta<f64> for Minimum {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
+    fn nexta(&mut self, input: f64) -> Self::Output {
         self.deque[self.cur_index] = input;
 
         if input < self.deque[self.min_index] {
@@ -89,11 +89,11 @@ impl Next<f64> for Minimum {
     }
 }
 
-impl<T: Low> Next<&T> for Minimum {
+impl<T: Low> Nexta<&T> for Minimum {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.next(input.low())
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.nexta(input.low())
     }
 }
 
@@ -134,16 +134,16 @@ mod tests {
     fn test_next() {
         let mut min = Minimum::new(3).unwrap();
 
-        assert_eq!(min.next(4.0), 4.0);
-        assert_eq!(min.next(1.2), 1.2);
-        assert_eq!(min.next(5.0), 1.2);
-        assert_eq!(min.next(3.0), 1.2);
-        assert_eq!(min.next(4.0), 3.0);
-        assert_eq!(min.next(6.0), 3.0);
-        assert_eq!(min.next(7.0), 4.0);
-        assert_eq!(min.next(8.0), 6.0);
-        assert_eq!(min.next(-9.0), -9.0);
-        assert_eq!(min.next(0.0), -9.0);
+        assert_eq!(min.nexta(4.0), 4.0);
+        assert_eq!(min.nexta(1.2), 1.2);
+        assert_eq!(min.nexta(5.0), 1.2);
+        assert_eq!(min.nexta(3.0), 1.2);
+        assert_eq!(min.nexta(4.0), 3.0);
+        assert_eq!(min.nexta(6.0), 3.0);
+        assert_eq!(min.nexta(7.0), 4.0);
+        assert_eq!(min.nexta(8.0), 6.0);
+        assert_eq!(min.nexta(-9.0), -9.0);
+        assert_eq!(min.nexta(0.0), -9.0);
     }
 
     #[test]
@@ -154,21 +154,21 @@ mod tests {
 
         let mut min = Minimum::new(3).unwrap();
 
-        assert_eq!(min.next(&bar(4.0)), 4.0);
-        assert_eq!(min.next(&bar(4.0)), 4.0);
-        assert_eq!(min.next(&bar(1.2)), 1.2);
-        assert_eq!(min.next(&bar(5.0)), 1.2);
+        assert_eq!(min.nexta(&bar(4.0)), 4.0);
+        assert_eq!(min.nexta(&bar(4.0)), 4.0);
+        assert_eq!(min.nexta(&bar(1.2)), 1.2);
+        assert_eq!(min.nexta(&bar(5.0)), 1.2);
     }
 
     #[test]
     fn test_reset() {
         let mut min = Minimum::new(10).unwrap();
 
-        assert_eq!(min.next(5.0), 5.0);
-        assert_eq!(min.next(7.0), 5.0);
+        assert_eq!(min.nexta(5.0), 5.0);
+        assert_eq!(min.nexta(7.0), 5.0);
 
         min.reset();
-        assert_eq!(min.next(8.0), 8.0);
+        assert_eq!(min.nexta(8.0), 8.0);
     }
 
     #[test]

@@ -7,7 +7,7 @@ use tars::indicators::{
     PercentagePriceOscillator, RateOfChange, RelativeStrengthIndex, SimpleMovingAverage,
     SlowStochastic, StandardDeviation, TrueRange,
 };
-use tars::{DataItem, Next};
+use tars::{DataItem, Nexta};
 
 const ITEMS_COUNT: usize = 5_000;
 
@@ -40,7 +40,7 @@ macro_rules! bench_indicators {
 
                 bench.iter(|| {
                     for item in items.iter() {
-                        indicator.next(item);
+                        indicator.nexta(item);
                     }
                 })
             }

@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::errors::Result;
 use crate::indicators::{ExponentialMovingAverage, FastStochastic};
-use crate::{Close, High, Low, Next, Period, Reset};
+use crate::{Close, High, Low, Nexta, Period, Reset};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
@@ -19,14 +19,14 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::SlowStochastic;
-/// use tars::Next;
+/// use tars::Nexta;
 ///
 /// let mut stoch = SlowStochastic::new(3, 2).unwrap();
-/// assert_eq!(stoch.next(10.0), 50.0);
-/// assert_eq!(stoch.next(50.0).round(), 83.0);
-/// assert_eq!(stoch.next(50.0).round(), 94.0);
-/// assert_eq!(stoch.next(30.0).round(), 31.0);
-/// assert_eq!(stoch.next(55.0).round(), 77.0);
+/// assert_eq!(stoch.nexta(10.0), 50.0);
+/// assert_eq!(stoch.nexta(50.0).round(), 83.0);
+/// assert_eq!(stoch.nexta(50.0).round(), 94.0);
+/// assert_eq!(stoch.nexta(30.0).round(), 31.0);
+/// assert_eq!(stoch.nexta(55.0).round(), 77.0);
 /// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Clone, Debug)]
@@ -44,19 +44,19 @@ impl SlowStochastic {
     }
 }
 
-impl Next<f64> for SlowStochastic {
+impl Nexta<f64> for SlowStochastic {
     type Output = f64;
 
-    fn next(&mut self, input: f64) -> Self::Output {
-        self.ema.next(self.fast_stochastic.next(input))
+    fn nexta(&mut self, input: f64) -> Self::Output {
+        self.ema.nexta(self.fast_stochastic.nexta(input))
     }
 }
 
-impl<T: High + Low + Close> Next<&T> for SlowStochastic {
+impl<T: High + Low + Close> Nexta<&T> for SlowStochastic {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
-        self.ema.next(self.fast_stochastic.next(input))
+    fn nexta(&mut self, input: &T) -> Self::Output {
+        self.ema.nexta(self.fast_stochastic.nexta(input))
     }
 }
 
@@ -101,11 +101,11 @@ mod tests {
     #[test]
     fn test_next_with_f64() {
         let mut stoch = SlowStochastic::new(3, 2).unwrap();
-        assert_eq!(stoch.next(10.0), 50.0);
-        assert_eq!(stoch.next(50.0).round(), 83.0);
-        assert_eq!(stoch.next(50.0).round(), 94.0);
-        assert_eq!(stoch.next(30.0).round(), 31.0);
-        assert_eq!(stoch.next(55.0).round(), 77.0);
+        assert_eq!(stoch.nexta(10.0), 50.0);
+        assert_eq!(stoch.nexta(50.0).round(), 83.0);
+        assert_eq!(stoch.nexta(50.0).round(), 94.0);
+        assert_eq!(stoch.nexta(30.0).round(), 31.0);
+        assert_eq!(stoch.nexta(55.0).round(), 77.0);
     }
 
     #[test]
@@ -124,19 +124,19 @@ mod tests {
 
         for (high, low, close, expected) in test_data {
             let input_bar = Bar::new().high(high).low(low).close(close);
-            assert_eq!(stoch.next(&input_bar).round(), expected);
+            assert_eq!(stoch.nexta(&input_bar).round(), expected);
         }
     }
 
     #[test]
     fn test_reset() {
         let mut stoch = SlowStochastic::new(3, 2).unwrap();
-        assert_eq!(stoch.next(10.0), 50.0);
-        assert_eq!(stoch.next(50.0).round(), 83.0);
-        assert_eq!(stoch.next(50.0).round(), 94.0);
+        assert_eq!(stoch.nexta(10.0), 50.0);
+        assert_eq!(stoch.nexta(50.0).round(), 83.0);
+        assert_eq!(stoch.nexta(50.0).round(), 94.0);
 
         stoch.reset();
-        assert_eq!(stoch.next(10.0), 50.0);
+        assert_eq!(stoch.nexta(10.0), 50.0);
     }
 
     #[test]

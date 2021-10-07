@@ -8,7 +8,7 @@ mod test {
     #[cfg(feature = "serde")]
     mod serde {
         use tars::indicators::SimpleMovingAverage;
-        use tars::Next;
+        use tars::Nexta;
 
         // Simple smoke test that serde works (not sure if this is really necessary)
         #[test]
@@ -17,7 +17,7 @@ mod test {
             let bytes = bincode::serialize(&macd).unwrap();
             let mut deserialized: SimpleMovingAverage = bincode::deserialize(&bytes).unwrap();
 
-            assert_eq!(deserialized.next(2.0), macd.next(2.0));
+            assert_eq!(deserialized.nexta(2.0), macd.nexta(2.0));
         }
     }
 }

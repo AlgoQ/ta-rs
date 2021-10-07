@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::errors::Result;
 use crate::indicators::{MeanAbsoluteDeviation, SimpleMovingAverage};
-use crate::{Close, High, Low, Next, Period, Reset};
+use crate::{Close, High, Low, Nexta, Period, Reset};
 
 /// Commodity Channel Index (CCI)
 ///
@@ -50,13 +50,13 @@ impl Period for CommodityChannelIndex {
     }
 }
 
-impl<T: Close + High + Low> Next<&T> for CommodityChannelIndex {
+impl<T: Close + High + Low> Nexta<&T> for CommodityChannelIndex {
     type Output = f64;
 
-    fn next(&mut self, input: &T) -> Self::Output {
+    fn nexta(&mut self, input: &T) -> Self::Output {
         let tp = (input.close() + input.high() + input.low()) / 3.0;
-        let sma = self.sma.next(tp);
-        let mad = self.mad.next(input);
+        let sma = self.sma.nexta(tp);
+        let mad = self.mad.nexta(input);
 
         if mad == 0.0 {
             return 0.0;
@@ -101,22 +101,22 @@ mod tests {
         let mut cci = CommodityChannelIndex::new(5).unwrap();
 
         let bar1 = Bar::new().high(2).low(1).close(1.5);
-        assert_eq!(round(cci.next(&bar1)), 0.0);
+        assert_eq!(round(cci.nexta(&bar1)), 0.0);
 
         let bar2 = Bar::new().high(5).low(3).close(4);
-        assert_eq!(round(cci.next(&bar2)), 66.667);
+        assert_eq!(round(cci.nexta(&bar2)), 66.667);
 
         let bar3 = Bar::new().high(9).low(7).close(8);
-        assert_eq!(round(cci.next(&bar3)), 100.0);
+        assert_eq!(round(cci.nexta(&bar3)), 100.0);
 
         let bar4 = Bar::new().high(5).low(3).close(4);
-        assert_eq!(round(cci.next(&bar4)), -13.793);
+        assert_eq!(round(cci.nexta(&bar4)), -13.793);
 
         let bar5 = Bar::new().high(5).low(3).close(4);
-        assert_eq!(round(cci.next(&bar5)), -13.514);
+        assert_eq!(round(cci.nexta(&bar5)), -13.514);
 
         let bar6 = Bar::new().high(2).low(1).close(1.5);
-        assert_eq!(round(cci.next(&bar6)), -126.126);
+        assert_eq!(round(cci.nexta(&bar6)), -126.126);
     }
 
     #[test]
@@ -126,13 +126,13 @@ mod tests {
         let bar1 = Bar::new().high(2).low(1).close(1.5);
         let bar2 = Bar::new().high(5).low(3).close(4);
 
-        assert_eq!(round(cci.next(&bar1)), 0.0);
-        assert_eq!(round(cci.next(&bar2)), 66.667);
+        assert_eq!(round(cci.nexta(&bar1)), 0.0);
+        assert_eq!(round(cci.nexta(&bar2)), 66.667);
 
         cci.reset();
 
-        assert_eq!(round(cci.next(&bar1)), 0.0);
-        assert_eq!(round(cci.next(&bar2)), 66.667);
+        assert_eq!(round(cci.nexta(&bar1)), 0.0);
+        assert_eq!(round(cci.nexta(&bar2)), 66.667);
     }
 
     #[test]

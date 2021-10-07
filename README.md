@@ -27,15 +27,15 @@ Example:
 
 ```rust
 use tars::indicators::ExponentialMovingAverage;
-use tars::Next;
+use tars::Nexta;
 
 // it can return an error, when an invalid length is passed (e.g. 0)
 let mut ema = ExponentialMovingAverage::new(3).unwrap();
 
-assert_eq!(ema.next(2.0), 2.0);
-assert_eq!(ema.next(5.0), 3.5);
-assert_eq!(ema.next(1.0), 2.25);
-assert_eq!(ema.next(6.25), 4.25);
+assert_eq!(ema.nexta(2.0), 2.0);
+assert_eq!(ema.nexta(5.0), 3.5);
+assert_eq!(ema.nexta(1.0), 2.25);
+assert_eq!(ema.nexta(6.25), 4.25);
 ```
 
 See more in the examples [here](https://github.com/greyblake/tars-rs/tree/master/examples).
@@ -56,7 +56,7 @@ You probably should prefer using `DataItem` unless you have reasons to implement
 
 Indicators typically implement the following traits:
 
-* `Next<T>` (often `Next<f64>` and `Next<&DataItem>`) - to feed and get the next value
+* `Nexta<T>` (often `Nexta<f64>` and `Nexta<&DataItem>`) - to feed and get the nexta value
 * `Reset` - to reset an indicator
 * `Debug`
 * `Display`
