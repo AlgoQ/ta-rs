@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use ta::DataItem;
-/// use ta::{Open, High, Low, Close, Volume};
+/// use tars::DataItem;
+/// use tars::{Open, High, Low, Close, Volume};
 ///
 /// let item = DataItem::builder()
 ///     .open(20.0)

@@ -31,8 +31,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use ta::indicators::PercentagePriceOscillator as Ppo;
-/// use ta::Next;
+/// use tars::indicators::PercentagePriceOscillator as Ppo;
+/// use tars::Next;
 ///
 /// let mut ppo = Ppo::new(3, 6, 4).unwrap();
 ///

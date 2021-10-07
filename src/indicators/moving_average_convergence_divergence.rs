@@ -31,8 +31,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use ta::indicators::MovingAverageConvergenceDivergence as Macd;
-/// use ta::Next;
+/// use tars::indicators::MovingAverageConvergenceDivergence as Macd;
+/// use tars::Next;
 ///
 /// let mut macd = Macd::new(3, 6, 4).unwrap();
 ///

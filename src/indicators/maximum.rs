@@ -15,8 +15,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use ta::indicators::Maximum;
-/// use ta::Next;
+/// use tars::indicators::Maximum;
+/// use tars::Next;
 ///
 /// let mut max = Maximum::new(3).unwrap();
 /// assert_eq!(max.next(7.0), 7.0);

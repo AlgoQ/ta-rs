@@ -1,4 +1,4 @@
-//! ta is a Rust library for technical analysis. It provides number of technical indicators
+//! tars is a Rust library for technical analysis. It provides number of technical indicators
 //! that can be used to build trading strategies for stock markets, futures, forex, cryptocurrencies, etc.
 //!
 //! Every indicator is implemented as a data structure with fields, that define parameters and
@@ -12,8 +12,8 @@
 //!
 //! # Example
 //! ```
-//! use ta::indicators::ExponentialMovingAverage;
-//! use ta::Next;
+//! use tars::indicators::ExponentialMovingAverage;
+//! use tars::Next;
 //!
 //! // it can return an error, when an invalid period is passed (e.g. 0)
 //! let mut ema = ExponentialMovingAverage::new(3).unwrap();

@@ -1,5 +1,5 @@
 extern crate csv;
-extern crate ta;
+extern crate tars;
 
 // TODO: implement some integration tests
 
@@ -7,8 +7,8 @@ extern crate ta;
 mod test {
     #[cfg(feature = "serde")]
     mod serde {
-        use ta::indicators::SimpleMovingAverage;
-        use ta::Next;
+        use tars::indicators::SimpleMovingAverage;
+        use tars::Next;
 
         // Simple smoke test that serde works (not sure if this is really necessary)
         #[test]

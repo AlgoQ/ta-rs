@@ -24,8 +24,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use ta::indicators::RateOfChange;
-/// use ta::Next;
+/// use tars::indicators::RateOfChange;
+/// use tars::Next;
 ///
 /// let mut roc = RateOfChange::new(2).unwrap();
 /// assert_eq!(roc.next(10.0), 0.0);            //  0

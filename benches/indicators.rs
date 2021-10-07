@@ -1,13 +1,13 @@
 use bencher::{benchmark_group, benchmark_main, Bencher};
 use rand::Rng;
-use ta::indicators::{
+use tars::indicators::{
     AverageTrueRange, BollingerBands, ChandelierExit, CommodityChannelIndex, EfficiencyRatio,
     ExponentialMovingAverage, FastStochastic, KeltnerChannel, Maximum, MeanAbsoluteDeviation,
     Minimum, MoneyFlowIndex, MovingAverageConvergenceDivergence, OnBalanceVolume,
     PercentagePriceOscillator, RateOfChange, RelativeStrengthIndex, SimpleMovingAverage,
     SlowStochastic, StandardDeviation, TrueRange,
 };
-use ta::{DataItem, Next};
+use tars::{DataItem, Next};
 
 const ITEMS_COUNT: usize = 5_000;
 

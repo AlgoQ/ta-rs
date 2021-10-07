@@ -1,9 +1,9 @@
-# Technical Analysis for Rust (ta)
+# Technical Analysis for Rust (tars)
 
-[![Build Status](https://img.shields.io/travis/greyblake/ta-rs)](https://travis-ci.org/greyblake/ta-rs)
-[![Crates.io](https://img.shields.io/crates/v/ta)](https://crates.io/crates/ta)
-[![Docs.rs](https://docs.rs/ta/badge.svg)](https://docs.rs/ta)
-[![License](https://img.shields.io/crates/l/ta)](https://raw.githubusercontent.com/greyblake/ta-rs/master/LICENSE)
+[![Build Status](https://img.shields.io/travis/greyblake/tars-rs)](https://travis-ci.org/greyblake/tars-rs)
+[![Crates.io](https://img.shields.io/crates/v/tars)](https://crates.io/crates/tars)
+[![Docs.rs](https://docs.rs/tars/badge.svg)](https://docs.rs/tars)
+[![License](https://img.shields.io/crates/l/tars)](https://raw.githubusercontent.com/greyblake/tars-rs/master/LICENSE)
 
 Technical analysis library for Rust.
 
@@ -20,14 +20,14 @@ Technical analysis library for Rust.
 Add to you `Cargo.toml`:
 ```
 [dependencies]
-ta = "0.4.0"
+tars = "0.4.0"
 ```
 
 Example:
 
 ```rust
-use ta::indicators::ExponentialMovingAverage;
-use ta::Next;
+use tars::indicators::ExponentialMovingAverage;
+use tars::Next;
 
 // it can return an error, when an invalid length is passed (e.g. 0)
 let mut ema = ExponentialMovingAverage::new(3).unwrap();
@@ -38,8 +38,8 @@ assert_eq!(ema.next(1.0), 2.25);
 assert_eq!(ema.next(6.25), 4.25);
 ```
 
-See more in the examples [here](https://github.com/greyblake/ta-rs/tree/master/examples).
-Check also the [documentation](https://docs.rs/ta).
+See more in the examples [here](https://github.com/greyblake/tars-rs/tree/master/examples).
+Check also the [documentation](https://docs.rs/tars).
 
 ## Basic ideas
 
@@ -96,7 +96,7 @@ So far there are the following indicators available.
 ## Features
 
 * `serde` - allows to serialize and deserialize indicators. NOTE: the backward compatibility of serialized
-data with the future versions of ta is not guaranteed because internal implementation of the indicators is a subject to change.
+data with the future versions of tars is not guaranteed because internal implementation of the indicators is a subject to change.
 
 ## Running benchmarks
 
@@ -108,12 +108,12 @@ cargo bench
 
 You can support the project by donating [NEAR tokens](https://near.org).
 
-Our NEAR wallet address is `ta-rs.near`
+Our NEAR wallet address is `tars-rs.near`
 
 
 ## License
 
-[MIT](https://github.com/greyblake/ta-rs/blob/master/LICENSE) © [Sergey Potapov](http://greyblake.com/)
+[MIT](https://github.com/greyblake/tars-rs/blob/master/LICENSE) © [Sergey Potapov](http://greyblake.com/)
 
 
 ## Contributors

@@ -24,8 +24,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 ///```
-/// use ta::indicators::{BollingerBands, BollingerBandsOutput};
-/// use ta::Next;
+/// use tars::indicators::{BollingerBands, BollingerBandsOutput};
+/// use tars::Next;
 ///
 /// let mut bb = BollingerBands::new(3, 2.0_f64).unwrap();
 ///

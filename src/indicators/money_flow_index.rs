@@ -35,8 +35,8 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use ta::indicators::MoneyFlowIndex;
-/// use ta::{Next, DataItem};
+/// use tars::indicators::MoneyFlowIndex;
+/// use tars::{Next, DataItem};
 ///
 /// let mut mfi = MoneyFlowIndex::new(3).unwrap();
 /// let di = DataItem::builder()
