@@ -1,5 +1,5 @@
 use tars::indicators::ExponentialMovingAverage as Ema;
-use tars::DataItem;
+use tars::DataItema;
 use tars::Nexta;
 
 fn main() {
@@ -9,7 +9,7 @@ fn main() {
     for record in reader.deserialize() {
         let (date, open, high, low, close, volume): (String, f64, f64, f64, f64, f64) =
             record.unwrap();
-        let dt = DataItem::builder()
+        let dt = DataItema::builder()
             .open(open)
             .high(high)
             .low(low)

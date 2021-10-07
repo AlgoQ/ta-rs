@@ -52,11 +52,11 @@ A data item which represent a stock quote may implement the following traits:
 * `Volume`
 
 It's not necessary to implement all of them, but it must be enough to fulfill requirements for a particular indicator.
-You probably should prefer using `DataItem` unless you have reasons to implement your own structure.
+You probably should prefer using `DataItema` unless you have reasons to implement your own structure.
 
 Indicators typically implement the following traits:
 
-* `Nexta<T>` (often `Nexta<f64>` and `Nexta<&DataItem>`) - to feed and get the nexta value
+* `Nexta<T>` (often `Nexta<f64>` and `Nexta<&DataItema>`) - to feed and get the nexta value
 * `Reset` - to reset an indicator
 * `Debug`
 * `Display`

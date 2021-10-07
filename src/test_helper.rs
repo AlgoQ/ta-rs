@@ -92,7 +92,7 @@ macro_rules! test_indicator {
             // ensure Nexta<f64> is implemented
             let first_output = indicator.nexta(12.3);
 
-            // ensure nexta accepts &DataItem as well
+            // ensure nexta accepts &DataItema as well
             indicator.nexta(&bar);
 
             // ensure Reset is implemented and works correctly

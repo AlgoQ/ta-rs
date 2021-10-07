@@ -9,10 +9,10 @@ use serde::{Deserialize, Serialize};
 /// # Example
 ///
 /// ```
-/// use tars::DataItem;
+/// use tars::DataItema;
 /// use tars::{Open, High, Low, Close, Volume};
 ///
-/// let item = DataItem::builder()
+/// let item = DataItema::builder()
 ///     .open(20.0)
 ///     .high(25.0)
 ///     .low(15.0)
@@ -30,7 +30,7 @@ use serde::{Deserialize, Serialize};
 ///
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone)]
-pub struct DataItem {
+pub struct DataItema {
     open: f64,
     high: f64,
     low: f64,
@@ -38,37 +38,37 @@ pub struct DataItem {
     volume: f64,
 }
 
-impl DataItem {
+impl DataItema {
     pub fn builder() -> DataItemBuilder {
         DataItemBuilder::new()
     }
 }
 
-impl Open for DataItem {
+impl Open for DataItema {
     fn open(&self) -> f64 {
         self.open
     }
 }
 
-impl High for DataItem {
+impl High for DataItema {
     fn high(&self) -> f64 {
         self.high
     }
 }
 
-impl Low for DataItem {
+impl Low for DataItema {
     fn low(&self) -> f64 {
         self.low
     }
 }
 
-impl Close for DataItem {
+impl Close for DataItema {
     fn close(&self) -> f64 {
         self.close
     }
 }
 
-impl Volume for DataItem {
+impl Volume for DataItema {
     fn volume(&self) -> f64 {
         self.volume
     }
@@ -118,7 +118,7 @@ impl DataItemBuilder {
         self
     }
 
-    pub fn build(self) -> Result<DataItem> {
+    pub fn build(self) -> Result<DataItema> {
         if let (Some(open), Some(high), Some(low), Some(close), Some(volume)) =
             (self.open, self.high, self.low, self.close, self.volume)
         {
@@ -131,7 +131,7 @@ impl DataItemBuilder {
                 && volume >= 0.0
                 && low >= 0.0
             {
-                let item = DataItem {
+                let item = DataItema {
                     open,
                     high,
                     low,
@@ -155,7 +155,7 @@ mod tests {
     #[test]
     fn test_builder() {
         fn assert_valid((open, high, low, close, volume): (f64, f64, f64, f64, f64)) {
-            let result = DataItem::builder()
+            let result = DataItema::builder()
                 .open(open)
                 .high(high)
                 .low(low)
@@ -166,7 +166,7 @@ mod tests {
         }
 
         fn assert_invalid((open, high, low, close, volume): (f64, f64, f64, f64, f64)) {
-            let result = DataItem::builder()
+            let result = DataItema::builder()
                 .open(open)
                 .high(high)
                 .low(low)

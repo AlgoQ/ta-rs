@@ -29,11 +29,11 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::OnBalanceVolume;
-/// use tars::{Nexta, DataItem};
+/// use tars::{Nexta, DataItema};
 ///
 /// let mut obv = OnBalanceVolume::new();
 ///
-/// let di1 = DataItem::builder()
+/// let di1 = DataItema::builder()
 ///             .high(3.0)
 ///             .low(1.0)
 ///             .close(2.0)
@@ -41,7 +41,7 @@ use serde::{Deserialize, Serialize};
 ///             .volume(1000.0)
 ///             .build().unwrap();
 ///
-/// let di2 = DataItem::builder()
+/// let di2 = DataItema::builder()
 ///             .high(3.0)
 ///             .low(1.0)
 ///             .close(1.5)

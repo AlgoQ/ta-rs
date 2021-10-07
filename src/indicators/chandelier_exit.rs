@@ -28,11 +28,11 @@ use crate::{Close, High, Low, Nexta, Period, Reset};
 ///
 /// ```
 /// use tars::indicators::ChandelierExit;
-/// use tars::{Nexta, DataItem};
+/// use tars::{Nexta, DataItema};
 ///
-/// let value1 = DataItem::builder()
+/// let value1 = DataItema::builder()
 /// .open(21.0).high(22.0).low(20.0).close(21.0).volume(1.0).build().unwrap();
-/// let value2 = DataItem::builder()
+/// let value2 = DataItema::builder()
 /// .open(23.0).high(24.0).low(22.0).close(23.0).volume(1.0).build().unwrap();
 ///
 /// let mut ce = ChandelierExit::default();

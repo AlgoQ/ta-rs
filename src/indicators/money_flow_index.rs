@@ -36,10 +36,10 @@ use serde::{Deserialize, Serialize};
 ///
 /// ```
 /// use tars::indicators::MoneyFlowIndex;
-/// use tars::{Nexta, DataItem};
+/// use tars::{Nexta, DataItema};
 ///
 /// let mut mfi = MoneyFlowIndex::new(3).unwrap();
-/// let di = DataItem::builder()
+/// let di = DataItema::builder()
 ///             .high(3.0)
 ///             .low(1.0)
 ///             .close(2.0)

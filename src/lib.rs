@@ -8,7 +8,7 @@
 //! which are the core concept of the library.
 //!
 //! Since `Nexta<T>` is a generic trait, most of the indicators can work with both input types: `f64` and more complex
-//! structures like [DataItem](struct.DataItem.html).
+//! structures like [DataItema](struct.DataItema.html).
 //!
 //! # Example
 //! ```
@@ -64,4 +64,4 @@ mod traits;
 pub use crate::traits::*;
 
 mod data_item;
-pub use crate::data_item::DataItem;
+pub use crate::data_item::DataItema;

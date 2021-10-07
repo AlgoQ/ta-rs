@@ -24,7 +24,7 @@ use serde::{Deserialize, Serialize};
 /// extern crate tars;
 /// #[macro_use] extern crate assert_approx_eq;
 ///
-/// use tars::{Nexta, DataItem};
+/// use tars::{Nexta, DataItema};
 /// use tars::indicators::TrueRange;
 ///
 /// fn main() {
@@ -38,7 +38,7 @@ use serde::{Deserialize, Serialize};
 ///     let mut indicator = TrueRange::new();
 ///
 ///     for (open, high, low, close, tr) in data {
-///         let di = DataItem::builder()
+///         let di = DataItema::builder()
 ///             .high(high)
 ///             .low(low)
 ///             .close(close)
