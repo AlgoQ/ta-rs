@@ -5,8 +5,9 @@ use tars::indicators::{
     ExponentialMovingAverage, FastStochastic, KeltnerChannel, Maximum, MeanAbsoluteDeviation,
     Minimum, MoneyFlowIndex, MovingAverageConvergenceDivergence, OnBalanceVolume,
     PercentagePriceOscillator, RateOfChange, RelativeStrengthIndex, SimpleMovingAverage,
-    SlowStochastic, StandardDeviation, TrueRange,
+    SlowStochastic, StandardDeviation, TrueRange, WindowedExponentialMovingAverage
 };
+
 use tars::{DataItema, Nexta};
 
 const ITEMS_COUNT: usize = 5_000;
@@ -54,6 +55,7 @@ macro_rules! bench_indicators {
 bench_indicators!(
     AverageTrueRange,
     ExponentialMovingAverage,
+    WWMA,
     MeanAbsoluteDeviation,
     BollingerBands,
     ChandelierExit,
